@@ -1,9 +1,10 @@
 package com.javanme.java8;
 
+import java.io.IOException;
+import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.List;
-import java.util.Map;
-import java.util.OptionalInt;
+import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * Clase con ejercicios nivel intermedio
@@ -15,7 +16,7 @@ public class Intermedio {
 
     /**
      * Contar el número de líneas no vacías que tiene el archivo pasado por parámetro.
-     * Usar nuevos métodos encontrados en la clase java.nio.file.Files en Java 8 para obtener un Stream de 
+     * Usar nuevos métodos encontrados en la clase java.nio.file.Files en Java 8 para obtener un Stream de
      * las líneas de texto un archivo.
      *
      * @param archivo Ruta al archivo que se desea evaluar
@@ -24,14 +25,23 @@ public class Intermedio {
      * @see java.util.stream.Stream
      */
     public long ejercicio1(Path archivo) {
-        throw new UnsupportedOperationException();
+        long retorno = 0;
+        try {
+            retorno = Files.lines(archivo)
+                    .filter(x -> !x.isEmpty())
+                    .count();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        return retorno;
     }
 
     /**
      * Encuentra el número de caracteres que tiene la línea más larga del archivo.
-     * Usar nuevos métodos encontrados en la clase java.nio.file.Files en Java 8 para obtener un Stream de 
+     * Usar nuevos métodos encontrados en la clase java.nio.file.Files en Java 8 para obtener un Stream de
      * las líneas de texto de un archivo.
-     * Para poder obtener un OptionalInt como resultado, debes convertir el Stream a uno primitivo. 
+     * Para poder obtener un OptionalInt como resultado, debes convertir el Stream a uno primitivo.
      *
      * @param archivo Ruta al archivo que se desea evaluar
      * @return Cantidad de caracteres que tiene la línea más larga del archivo
@@ -40,16 +50,24 @@ public class Intermedio {
      * @see java.util.stream.IntStream
      */
     public OptionalInt ejercicio2(Path archivo) {
-        throw new UnsupportedOperationException();
+        OptionalInt retorno = OptionalInt.empty();
+        try {
+            retorno = Files.lines(archivo)
+                    .mapToInt(String::length)
+                    .max();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return retorno;
     }
 
     /**
      * De las palabras que se encuentran en el archivo pasado por parámetro, conviertelas a minúsculas,
      * sin duplicados, ordenadas primero por tamaño y luego alfabeticamente.
-     *
+     * <p>
      * Une todas las palabras en una cadena de texto separando cada palabra por un espacio (" ")
-     *
-     * Usa la constante REGEXP proveida al inicio de esta clase para hacer la separación de cadenas de texto a palabras. 
+     * <p>
+     * Usa la constante REGEXP proveida al inicio de esta clase para hacer la separación de cadenas de texto a palabras.
      * Es posible que esta expresión retorne palabras vacías por lo que tendrás que adicionar un filtro que las remueva.
      *
      * @param archivo Ruta al archivo que se desea evaluar
@@ -61,13 +79,28 @@ public class Intermedio {
      * @see java.util.stream.Collectors
      */
     public String ejercicio3(Path archivo) {
-        throw new UnsupportedOperationException();
+        String retorno = null;
+        try {
+            String[] contenido = Files.lines(archivo)
+                    .filter(x -> !x.isEmpty())
+                    .map(String::toLowerCase)
+                    .collect(Collectors.joining(" ")).split(REGEXP);
+            retorno = Arrays.stream(contenido)
+                    .distinct()
+                    .sorted(String::compareTo)
+                    .sorted(Comparator.comparingInt(String::length))
+                    .collect(Collectors.joining(" "));
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return retorno;
     }
 
     /**
      * Categorizar TODAS las palabras de las primeras 10 líneas del archivo pasado por parámetro en un Map cuya llave es el
      * número de caracteres y el valor es el listado de palabras que tienen esa cantidad de caracteres
-     *
+     * <p>
      * Usa la constante REGEXP proveida al inicio de esta clase para hacer la separación de cadenas de texto a palabras. Es posible
      * que esta expresión retorne palabras vacías por lo que tendrás que adicionar un filtro que las remueva.
      *
@@ -80,7 +113,20 @@ public class Intermedio {
      * @see java.util.stream.Collectors
      */
     public Map<Integer, List<String>> ejercicio4(Path archivo) {
-        throw new UnsupportedOperationException();
+        Map<Integer, List<String>> retorno = null;
+        try {
+            String[] content = Files.lines(archivo)
+                    .limit(10)
+                    .map(String::toLowerCase)
+                    .collect(Collectors.joining(" ")).split(REGEXP);
+            retorno = Arrays.stream(content)
+                    .filter(x -> !x.isEmpty())
+                    .collect(Collectors.groupingBy(String::length));
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return retorno;
     }
 
 
@@ -100,7 +146,19 @@ public class Intermedio {
      * @see java.util.stream.Collectors
      */
     public Map<String, Long> ejercicio5(Path archivo) {
-        throw new UnsupportedOperationException();
+        Map<String, Long> retorno = null;
+        try {
+            String[] content = Files.lines(archivo)
+                    .limit(100)
+                    .collect(Collectors.joining(" ")).split(REGEXP);
+            retorno = Arrays.stream(content)
+                    .filter(x -> !x.isEmpty())
+                    .collect(Collectors.groupingBy(o -> o, Collectors.counting()));
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return retorno;
     }
 
     /**
@@ -127,7 +185,20 @@ public class Intermedio {
      * @see java.util.stream.Collectors
      */
     public Map<String, Map<Integer, List<String>>> ejercicio6(Path archivo) {
-        throw new UnsupportedOperationException();
+        Map<String, Map<Integer, List<String>>> retorno = null;
+        try {
+            String[] content = Files.lines(archivo)
+                    .collect(Collectors.joining(" ")).split(REGEXP);
+            retorno = Arrays.stream(content)
+                    .filter(x -> !x.isEmpty())
+                    .map(String::toLowerCase)
+                    .distinct()
+                    .collect(Collectors.groupingBy(o -> o.substring(0, 1).toUpperCase(), Collectors.groupingBy(String::length)));
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return retorno;
     }
 }
 
