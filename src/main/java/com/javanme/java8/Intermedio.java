@@ -81,16 +81,14 @@ public class Intermedio {
     public String ejercicio3(Path archivo) {
         String retorno = null;
         try {
-            String[] contenido = Files.lines(archivo)
+            retorno = Files.lines(archivo)
                     .filter(x -> !x.isEmpty())
+                    .flatMap(x -> Arrays.stream(x.split(REGEXP)))
                     .map(String::toLowerCase)
-                    .collect(Collectors.joining(" ")).split(REGEXP);
-            retorno = Arrays.stream(contenido)
                     .distinct()
-                    .sorted(String::compareTo)
-                    .sorted(Comparator.comparingInt(String::length))
+                    .sorted(Comparator.comparingInt(String::length)
+                            .thenComparing(Comparator.naturalOrder()))
                     .collect(Collectors.joining(" "));
-
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -115,11 +113,10 @@ public class Intermedio {
     public Map<Integer, List<String>> ejercicio4(Path archivo) {
         Map<Integer, List<String>> retorno = null;
         try {
-            String[] content = Files.lines(archivo)
+            retorno = Files.lines(archivo)
                     .limit(10)
+                    .flatMap(x -> Arrays.stream(x.split(REGEXP)))
                     .map(String::toLowerCase)
-                    .collect(Collectors.joining(" ")).split(REGEXP);
-            retorno = Arrays.stream(content)
                     .filter(x -> !x.isEmpty())
                     .collect(Collectors.groupingBy(String::length));
 
@@ -148,10 +145,9 @@ public class Intermedio {
     public Map<String, Long> ejercicio5(Path archivo) {
         Map<String, Long> retorno = null;
         try {
-            String[] content = Files.lines(archivo)
+            retorno = Files.lines(archivo)
                     .limit(100)
-                    .collect(Collectors.joining(" ")).split(REGEXP);
-            retorno = Arrays.stream(content)
+                    .flatMap(x -> Arrays.stream(x.split(REGEXP)))
                     .filter(x -> !x.isEmpty())
                     .collect(Collectors.groupingBy(o -> o, Collectors.counting()));
 
@@ -187,9 +183,8 @@ public class Intermedio {
     public Map<String, Map<Integer, List<String>>> ejercicio6(Path archivo) {
         Map<String, Map<Integer, List<String>>> retorno = null;
         try {
-            String[] content = Files.lines(archivo)
-                    .collect(Collectors.joining(" ")).split(REGEXP);
-            retorno = Arrays.stream(content)
+            retorno = Files.lines(archivo)
+                    .flatMap(x -> Arrays.stream(x.split(REGEXP)))
                     .filter(x -> !x.isEmpty())
                     .map(String::toLowerCase)
                     .distinct()
